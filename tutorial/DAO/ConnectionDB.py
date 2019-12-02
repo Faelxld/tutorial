@@ -25,7 +25,7 @@ class ConnectionDB(object):
         elements = list(self.organizations.find({'lido': False}).skip(pageInicial).limit(pageInicial+const))
         lista = []
         for element in elements:
-            lista.append(self.formatLink(element['crunchbase_url']))
+            lista.append((element['crunchbase_url']))
         return lista
     def countOrganizations(self):
         return self.organizations.count()
