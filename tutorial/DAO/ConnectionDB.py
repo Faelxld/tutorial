@@ -20,7 +20,7 @@ class ConnectionDB(object):
             print(ex)
     def formatLink(self,link):
         limit = link.find('?')
-        return link[0:limit-1]
+        return link[0:limit-1] + '/'
     def findLinks(self,pageInicial,const):
         elements = list(self.organizations.find({'lido': False}).skip(pageInicial).limit(pageInicial+const))
         lista = []
