@@ -6,7 +6,7 @@ from tutorial.DAO.ConnectionDB import ConnectionDB
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
     connectionDB = ConnectionDB()
-    start_urls = connectionDB.findLinks(0,1000)
+    start_urls = connectionDB.findLinks(0,10)
 
     def start_requests(self):
 
