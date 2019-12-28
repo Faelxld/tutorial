@@ -9,17 +9,7 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-from pymongo import MongoClient
 
-def getProxys(collection):
-    lista = []
-    for element in list(collection.find({'proxy': 1})):
-        lista.append(element['proxy'])
-    return lista
-
-client = MongoClient()
-db = client["proxies"]
-collection = db["proxies"]
 
 BOT_NAME = 'tutorial'
 
@@ -46,7 +36,7 @@ USER_AGENT = [
 #ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -112,19 +102,20 @@ COOKIES_ENABLED = True
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-SPLASH_URL = 'http://0.0.0.0:8050'
+SPLASH_URL = 'http://35.184.178.203:8050/'
 
 
-ROTATING_PROXY_LIST = getProxys(collection)
 
+#ROTATING_PROXY_LIST =
 DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
-    'rotating_proxies.middlewares.RotatingProxyMiddleware': 610,
-    'rotating_proxies.middlewares.BanDetectionMiddleware': 620,
-    
-
 }
-DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
-HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
+
+SPIDER_MIDDLEWARES = {
+    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
+}
+
+
+DUPEFILTER_CLASS = 'scrapyjs.SplashAwareDupeFilter'

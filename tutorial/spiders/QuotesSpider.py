@@ -1,26 +1,54 @@
 import scrapy
-
+from datetime import datetime
 from tutorial.DAO.ConnectionDB import ConnectionDB
 
 
 class QuotesSpider(scrapy.Spider):
     name = "quotes"
     connectionDB = ConnectionDB()
-    start_urls = connectionDB.findLinks(0,10)
+    start_urls = []
+    url_veiculo = ''
+    id_veiculo = ''
+    nome_veiculo = ''
+    tiragem = ''
 
     def start_requests(self):
 
-        for url in self.start_urls:
-            yield scrapy.Request(url, self.parse, meta={
-                'splash': {
-                    'endpoint': 'render.html',
-                    'args': {'wait': 4}
-                }
-            })
+        totalVeiculos = self.connectionDB.countVeiculos()
+
+        for i in list(range(1,totalVeiculos)):
+            self.start_urls = self.connectionDB.selectVeiculos(i)
+            print('Start ' + str(len(self.start_urls)))
+            for veiculo in self.start_urls:
+                url = veiculo[3]
+                self.url_veiculo = url
+                self.id_veiculo = veiculo[0]
+                self.nome_veiculo = veiculo[1]
+                self.tiragem = veiculo[2]
+                yield scrapy.Request(url, callback=self.parse)
 
 
 
 
     def parse(self, response):
-        json = {'_id':response.url,'html': str(response.body)}
-        self.connectionDB.insertOrUpdate(json)
+        a_selectors = response.xpath("//a")
+        links = []
+        veiculo = self.connectionDB.selectVeiculoURL(response.url)
+        for selector in a_selectors:
+            if selector.xpath("@href").extract_first().find(veiculo[3]) != -1:
+                json = {
+                    "id":  selector.xpath("@href").extract_first(),
+                    "url":  selector.xpath("@href").extract_first(),
+                    "capturada": False,
+                    "Nome do Veiculo": veiculo[1],
+                    "id do veiculo": veiculo[0],
+                    "url do veiculo": veiculo[3],
+                    "tiragem do veiculo": veiculo[2],
+                    "data captura": datetime.now(),
+                    "lida": False,
+                }
+                links.append(json)
+                print(json['url do veiculo'])
+                print(json['url'])
+
+        self.connectionDB.insertSolr(links)

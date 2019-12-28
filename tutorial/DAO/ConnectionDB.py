@@ -1,31 +1,69 @@
-from pymongo import MongoClient
+import pymysql.cursors
+from urllib import request
+import requests
+import json
+
+
+import pysolr
+
 
 class ConnectionDB(object):
 
     def __init__(self):
-        _client = MongoClient('localhost', 27017)
-        self.db = _client['bex']
-        self.organizations = self.db['organizations']
-        self.pages = self.db['pages']
+      self.connection = self.getConnection()
+      self.solr = pysolr.Solr('http://localhost:8983/solr/mycol1/', timeout=10)
 
-    def insertOrUpdate(self,json):
+
+
+
+
+
+    def getConnection(self):
         try:
-            dicio = {"_id": json['_id']}
-            element = self.pages.find_one(dicio)
-            if element is None:
-                self.pages.insert(json)
-            else:
-                self.pages.update(dicio, json)
+            connection = pymysql.connect(host='sisiclipping.c9iphzxvhtzw.sa-east-1.rds.amazonaws.com',
+                                         user='admin',
+                                         password='admdata2708',
+                                         db='iclipping',
+                                         port=3306)
+            print(connection)
+            return connection
         except Exception as ex:
+            print('Erro Conexão')
             print(ex)
-    def formatLink(self,link):
-        limit = link.find('?')
-        return link[0:limit-1] + '/'
-    def findLinks(self,pageInicial,const):
-        elements = list(self.organizations.find({'lido': False}).skip(pageInicial).limit(pageInicial+const))
-        lista = []
-        for element in elements:
-            lista.append((element['crunchbase_url']))
-        return lista
-    def countOrganizations(self):
-        return self.organizations.count()
+
+    def selectVeiculos(self, page):
+        tamPage = 1000
+        offset = (page) * tamPage
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "select id, nome, tier, endereco_internet from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1 Limit " + str(offset) + ',' + str(tamPage)
+            cursor.execute(sql)
+            result = cursor.fetchall()
+        return (result)
+
+    def selectVeiculoURL(self, url):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "select id, nome, tier, endereco_internet from veiculos where  endereco_internet like" + "'%" + str(url) + "%'"
+            cursor.execute(sql)
+            result = cursor.fetchone()
+        return (result)
+
+    def countVeiculos(self):
+        with self.connection.cursor() as cursor:
+            # Read a single record
+            sql = "select count(nome) from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1 " # AND tier = 1
+
+            cursor.execute(sql)
+            result = cursor.fetchone()
+        return (result[0])
+
+    def selectSolr(self):
+        select = request.urlopen(
+            'http://localhost:8983/solr/mycol1/select?q=*%3A*')  # mudar para apenas quem não foi lido
+        rsp = json.load(select)
+        return rsp
+
+
+    def insertSolr(self,documents):
+        self.solr.add(documents)
