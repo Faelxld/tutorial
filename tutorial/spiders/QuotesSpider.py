@@ -47,17 +47,17 @@ class QuotesSpider(scrapy.Spider):
             if self.getLink(selector, veiculo[3]).find(veiculo[3]) != -1:
                 json = {
                     "id": self.getLink(selector, veiculo[3]),
-                    "url":  self.getLink(selector, veiculo[3]),
+                    "url_capturada":  self.getLink(selector, veiculo[3]),
                     "capturada": False,
-                    "Nome do Veiculo": veiculo[1],
-                    "id do veiculo": veiculo[0],
-                    "url do veiculo": veiculo[3],
-                    "tiragem do veiculo": veiculo[2],
+                    "veiculo": veiculo[1],
+                    "url_veiculo": veiculo[0],
+                    "id_veiculo": veiculo[3],
+                    "tiragem": veiculo[2],
                     "data captura": datetime.now(),
                     "lida": False,
                 }
                 links.append(json)
-                print(json['url do veiculo'])
-                print(json['url'])
+                print(json['url_veiculo'])
+                print(json['url_capturada'])
 
         self.connectionDB.insertSolr(links)
