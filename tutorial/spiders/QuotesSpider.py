@@ -30,10 +30,13 @@ class QuotesSpider(scrapy.Spider):
     def getLink(self,selector,urlVeiculo):
         link = selector.xpath("@href").extract_first()
         if link.find('http') == -1 :
-            if link[0] == '/':
+            if link[0] == '/' and urlVeiculo[-1] == '/':
                 return urlVeiculo + link[1:]
-            else:
+            elif link[0] != '/' and urlVeiculo[-1] == '/':
                 return urlVeiculo + link
+            elif urlVeiculo[-1] != '/' and link[0] != '/':
+                return urlVeiculo + '/' + link
+
         return link
 
 
