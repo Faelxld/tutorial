@@ -28,17 +28,22 @@ class QuotesSpider(scrapy.Spider):
                 yield scrapy.Request(url, callback=self.parse)
 
     def getLink(self,selector,urlVeiculo):
-        link = selector.xpath("@href").extract_first()
-        if link.find('http') == -1 :
-            if link[0] == '/' and urlVeiculo[-1] == '/':
-                return urlVeiculo + link[1:]
-            elif link[0] != '/' and urlVeiculo[-1] == '/':
-                return urlVeiculo + link
-            elif urlVeiculo[-1] != '/' and link[0] != '/':
-                return urlVeiculo + '/' + link
+        try:
+            link = selector.xpath("@href").extract_first()
+            if link is not None:
+                if link.find('http') == -1 :
+                    if link[0] == '/' and urlVeiculo[-1] == '/':
+                        return urlVeiculo + link[1:]
+                    elif link[0] != '/' and urlVeiculo[-1] == '/':
+                        return urlVeiculo + link
+                    elif urlVeiculo[-1] != '/' and link[0] != '/':
+                        return urlVeiculo + '/' + link
 
-        return link
-
+                return link
+            else:
+                return ''
+        except:
+            return ''
 
 
 
