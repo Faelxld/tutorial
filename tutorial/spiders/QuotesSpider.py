@@ -27,6 +27,12 @@ class QuotesSpider(scrapy.Spider):
                 self.tiragem = veiculo[2]
                 yield scrapy.Request(url, callback=self.parse)
 
+    def getLink(self,selector,urlVeiculo):
+        link = selector.xpath("@href").extract_first()
+        if link.find('http') == -1 :
+            return urlVeiculo + link[1:]
+        return link
+
 
 
 
@@ -37,7 +43,7 @@ class QuotesSpider(scrapy.Spider):
         for selector in a_selectors:
             if selector.xpath("@href").extract_first().find(veiculo[3]) != -1:
                 json = {
-                    "id":  selector.xpath("@href").extract_first(),
+                    "id": self.getLink(selector, veiculo[3]),
                     "url":  selector.xpath("@href").extract_first(),
                     "capturada": False,
                     "Nome do Veiculo": veiculo[1],
