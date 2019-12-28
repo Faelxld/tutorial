@@ -10,7 +10,7 @@ class ConnectionDB(object):
 
     def __init__(self):
       self.connection = self.getConnection()
-      self.solr = pysolr.Solr('http://localhost:8983/solr/mycol1/', timeout=10)
+      self.solr = pysolr.Solr('http://192.168.1.7:8983/solr/links/', timeout=10)
 
 
 
