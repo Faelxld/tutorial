@@ -41,10 +41,10 @@ class QuotesSpider(scrapy.Spider):
         links = []
         veiculo = self.connectionDB.selectVeiculoURL(response.url)
         for selector in a_selectors:
-            if selector.xpath("@href").extract_first().find(veiculo[3]) != -1:
+            if self.getLink(selector, veiculo[3]).find(veiculo[3]) != -1:
                 json = {
                     "id": self.getLink(selector, veiculo[3]),
-                    "url":  selector.xpath("@href").extract_first(),
+                    "url":  self.getLink(selector, veiculo[3]),
                     "capturada": False,
                     "Nome do Veiculo": veiculo[1],
                     "id do veiculo": veiculo[0],
