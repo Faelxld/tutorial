@@ -36,7 +36,7 @@ class ConnectionDB(object):
         offset = (page) * tamPage
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "select id, nome, tier, endereco_internet from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1 AND tier in (1,2)"# + str(offset) + ',' + str(tamPage)
+            sql = "select id, nome, tier, endereco_internet from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1"# + str(offset) + ',' + str(tamPage)
             cursor.execute(sql)
             result = cursor.fetchall()
         return (result)
