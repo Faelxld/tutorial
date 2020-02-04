@@ -10,7 +10,7 @@ class ConnectionDB(object):
 
     def __init__(self):
       self.connection = self.getConnection()
-      self.solr = pysolr.Solr('http://192.168.1.7:8983/solr/links/', timeout=10)
+      self.solr = pysolr.Solr('http://servermon.ddns.net:8983/solr/links/', timeout=10)
 
 
 
@@ -59,8 +59,7 @@ class ConnectionDB(object):
         return (result[0])
 
     def selectSolr(self):
-        select = request.urlopen(
-            'http://192.168.1.7:8983/solr/links/select?q=*%3A*')  # mudar para apenas quem não foi lido
+        select = request.urlopen('http://servermon.ddns.net:8983/solr/links/select?q=*%3A*')  # mudar para apenas quem não foi lido
         rsp = json.load(select)
         return rsp
 
