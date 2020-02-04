@@ -10,7 +10,7 @@ class ConnectionDB(object):
 
     def __init__(self):
       self.connection = self.getConnection()
-      self.solr = pysolr.Solr('http://servermon.ddns.net:8983/solr/', timeout=10)
+      self.solr = pysolr.Solr('http://192.168.1.7:8983/solr/links/', timeout=10)
 
 
 
@@ -36,15 +36,15 @@ class ConnectionDB(object):
         offset = (page) * tamPage
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "select id, nome, tier, endereco_internet from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1 Limit " + str(offset) + ',' + str(tamPage)
+            sql = "select id, nome, tier, endereco_internet from veiculos where tipo_veiculo in (7,6,5) AND ativo = 1 AND tier in (1,2)"# + str(offset) + ',' + str(tamPage)
             cursor.execute(sql)
             result = cursor.fetchall()
         return (result)
 
-    def selectVeiculoURL(self, url):
+    def selectVeiculoId(self, Id):
         with self.connection.cursor() as cursor:
             # Read a single record
-            sql = "select id, nome, tier, endereco_internet from veiculos where  endereco_internet like" + "'%" + str(url) + "%'"
+            sql = "select id, nome, tier, endereco_internet from veiculos where  id = " + str(Id)
             cursor.execute(sql)
             result = cursor.fetchone()
         return (result)
@@ -60,7 +60,7 @@ class ConnectionDB(object):
 
     def selectSolr(self):
         select = request.urlopen(
-            'http://localhost:8983/solr/mycol1/select?q=*%3A*')  # mudar para apenas quem não foi lido
+            'http://192.168.1.7:8983/solr/links/select?q=*%3A*')  # mudar para apenas quem não foi lido
         rsp = json.load(select)
         return rsp
 
